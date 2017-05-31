@@ -28,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         rg_main = (RadioGroup) findViewById(R.id.rg_main);
         initFragment();
-        //设置监听
         rg_main.setOnCheckedChangeListener(new MyOnCheckedChangeListener());
         rg_main.check(R.id.rb_local_video);
     }
