@@ -1,32 +1,15 @@
 package com.atguigu.tiankuo.recyclerviewdemo.pager;
 
-import android.graphics.Color;
-import android.view.Gravity;
-import android.view.View;
-import android.widget.TextView;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
-import com.atguigu.tiankuo.recyclerviewdemo.fragment.BaseFragment;
+import com.atguigu.tiankuo.recyclerviewdemo.R;
 
-/**
- * Created by Administrator on 2017/5/31 0031.
- */
-
-public class NetRecyclerPager extends BaseFragment {
-    private TextView textView;
+public class NetRecyclerPager extends AppCompatActivity {
 
     @Override
-    public View initView() {
-        textView = new TextView(context);
-        textView.setTextSize(30);
-        textView.setGravity(Gravity.CENTER);
-        textView.setTextColor(Color.RED);
-        return textView;
-
-    }
-
-    @Override
-    public void initData() {
-        super.initData();
-        textView.setText("网络视频的内容");
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_net_recycler_pager);
     }
 }
