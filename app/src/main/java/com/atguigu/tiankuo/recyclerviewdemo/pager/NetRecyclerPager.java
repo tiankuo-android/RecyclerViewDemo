@@ -23,4 +23,6 @@ public class NetRecyclerPager extends BaseFragment {
             datas.add("Content"+ i);
         }
     }
+
+
 }
