@@ -36,6 +36,7 @@ public abstract class BaseFragment extends Fragment{
         super.onActivityCreated(savedInstanceState);
         initData();
     }
+
     public void initData() {
 
     }

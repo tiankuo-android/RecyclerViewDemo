@@ -49,25 +49,25 @@ public class NetRecyclerAdapter extends RecyclerView.Adapter{
         RecyclerView.ViewHolder viewHolder = null;
         View convertView = null;
         switch (viewType) {
-            case TYPE_VIDEO://视频
+            case TYPE_VIDEO:
                 convertView = View.inflate(mContext, R.layout.all_video_item, null);
                 viewHolder = new VideoHoder(convertView);
 
                 break;
-            case TYPE_IMAGE://图片
+            case TYPE_IMAGE:
                 convertView = View.inflate(mContext, R.layout.all_image_item, null);
                 viewHolder = new ImageHolder(convertView);
                 break;
-            case TYPE_TEXT://文字
+            case TYPE_TEXT:
                 convertView = View.inflate(mContext, R.layout.all_text_item, null);
                 viewHolder = new TextHolder(convertView);
                 break;
-            case TYPE_GIF://gif
+            case TYPE_GIF:
                 convertView = View.inflate(mContext, R.layout.all_gif_item, null);
                 viewHolder = new GifHolder(convertView);
 
                 break;
-            case TYPE_AD://软件广告
+            case TYPE_AD:
                 convertView = View.inflate(mContext, R.layout.all_ad_item, null);
                 viewHolder = new ADHolder(convertView);
                 break;
