@@ -1,18 +1,24 @@
 package com.atguigu.tiankuo.recyclerviewdemo.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.atguigu.tiankuo.recyclerviewdemo.R;
+import com.atguigu.tiankuo.recyclerviewdemo.activity.ShowImageAndGifActivity;
 import com.atguigu.tiankuo.recyclerviewdemo.domain.NetAudioBean;
 import com.atguigu.tiankuo.recyclerviewdemo.util.Utils;
 import com.squareup.picasso.Picasso;
 
+import org.xutils.image.ImageOptions;
 import org.xutils.x;
 
 import java.util.List;
@@ -27,11 +33,11 @@ import fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard;
 public class NetRecyclerAdapter extends RecyclerView.Adapter{
 
     private final Context mContext;
-    private final List<NetAudioBean.ListBean> datas;
+    private final List<NetAudioBean.ListBean> listDatas;
 
-    public NetRecyclerAdapter(Context mContext, List<NetAudioBean.ListBean> datas) {
+    public NetRecyclerAdapter(Context mContext, List<NetAudioBean.ListBean> listDatas) {
         this.mContext = mContext;
-        this.datas = datas;
+        this.listDatas = listDatas;
     }
 
     private static final int TYPE_VIDEO = 0;
@@ -39,6 +45,30 @@ public class NetRecyclerAdapter extends RecyclerView.Adapter{
     private static final int TYPE_TEXT = 2;
     private static final int TYPE_GIF = 3;
     private static final int TYPE_AD = 4;
+
+    @Override
+    public int getItemCount() {
+        return listDatas.size();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        int itemViewType = -1;
+        NetAudioBean.ListBean listBean = listDatas.get(position);
+        String type = listBean.getType();//得到类型
+        if ("video".equals(type)) {
+            itemViewType = TYPE_VIDEO;
+        } else if ("image".equals(type)) {
+            itemViewType = TYPE_IMAGE;
+        } else if ("text".equals(type)) {
+            itemViewType = TYPE_TEXT;
+        } else if ("gif".equals(type)) {
+            itemViewType = TYPE_GIF;
+        } else {
+            itemViewType = TYPE_AD;//广播
+        }
+        return itemViewType;
+    }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -52,7 +82,6 @@ public class NetRecyclerAdapter extends RecyclerView.Adapter{
             case TYPE_VIDEO:
                 convertView = View.inflate(mContext, R.layout.all_video_item, null);
                 viewHolder = new VideoHoder(convertView);
-
                 break;
             case TYPE_IMAGE:
                 convertView = View.inflate(mContext, R.layout.all_image_item, null);
@@ -73,33 +102,100 @@ public class NetRecyclerAdapter extends RecyclerView.Adapter{
                 break;
         }
         return viewHolder;
-
-
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        int itemtype = getItemViewType(position);
         if (getItemViewType(position) == TYPE_VIDEO) {
             VideoHoder videoHoder = (VideoHoder) holder;
-            videoHoder.setData(datas.get(position));
+            videoHoder.setData(listDatas.get(position));
         } else if (getItemViewType(position) == TYPE_IMAGE) {
             ImageHolder imageHolder = (ImageHolder) holder;
-            imageHolder.setData(datas.get(position));
+            imageHolder.setData(listDatas.get(position));
         } else if (getItemViewType(position) == TYPE_TEXT) {
             TextHolder textHolder = (TextHolder) holder;
-            textHolder.setData(datas.get(position));
+            textHolder.setData(listDatas.get(position));
         } else if (getItemViewType(position) == TYPE_GIF) {
             GifHolder gifHolder = (GifHolder) holder;
-            gifHolder.setData(datas.get(position));
+            gifHolder.setData(listDatas.get(position));
         } else {
-            ADHolder adHolder = (ADHolder) holder;
-            adHolder.setData(datas.get(position));
+            ADHolder adHolder = (ADHolder)holder;
         }
     }
 
-    @Override
-    public int getItemCount() {
-        return datas.size();
+    class BaseViewHolder extends RecyclerView.ViewHolder {
+        ImageView ivHeadpic;
+        TextView tvName;
+        TextView tvTimeRefresh;
+        ImageView ivRightMore;
+        ImageView ivVideoKind;
+        TextView tvVideoKindText;
+        TextView tvShenheDingNumber;
+        TextView tvShenheCaiNumber;
+        TextView tvPostsNumber;
+        LinearLayout llDownload;
+
+        public BaseViewHolder(View convertView) {
+            super(convertView);
+
+            ivHeadpic = (ImageView) convertView.findViewById(R.id.iv_headpic);
+            tvName = (TextView) convertView.findViewById(R.id.tv_name);
+            tvTimeRefresh = (TextView) convertView.findViewById(R.id.tv_time_refresh);
+            ivRightMore = (ImageView) convertView.findViewById(R.id.iv_right_more);
+
+            ivVideoKind = (ImageView) convertView.findViewById(R.id.iv_video_kind);
+            tvVideoKindText = (TextView) convertView.findViewById(R.id.tv_video_kind_text);
+            tvShenheDingNumber = (TextView) convertView.findViewById(R.id.tv_shenhe_ding_number);
+            tvShenheCaiNumber = (TextView) convertView.findViewById(R.id.tv_shenhe_cai_number);
+            tvPostsNumber = (TextView) convertView.findViewById(R.id.tv_posts_number);
+            llDownload = (LinearLayout) convertView.findViewById(R.id.ll_download);
+
+            //设置点击事件
+            itemView.setOnClickListener(new AdapterView.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    NetAudioBean.ListBean listEntity = listDatas.get(getLayoutPosition());
+                    if (listEntity != null) {
+                        //3.传递视频列表
+                        Intent intent = new Intent(mContext, ShowImageAndGifActivity.class);
+                        if (listEntity.getType().equals("gif")) {
+                            String url = listEntity.getGif().getImages().get(0);
+                            intent.putExtra("url", url);
+                            mContext.startActivity(intent);
+                        } else if (listEntity.getType().equals("image")) {
+                            String url = listEntity.getImage().getBig().get(0);
+                            intent.putExtra("url", url);
+                            mContext.startActivity(intent);
+                        }
+                    }
+                }
+            });
+        }
+
+        public void setData(NetAudioBean.ListBean mediaItem) {
+
+            if (mediaItem.getU() != null && mediaItem.getU().getHeader() != null && mediaItem.getU().getHeader().get(0) != null) {
+                x.image().bind(ivHeadpic, mediaItem.getU().getHeader().get(0));
+            }
+            if (mediaItem.getU() != null && mediaItem.getU().getName() != null) {
+                tvName.setText(mediaItem.getU().getName() + "");
+            }
+
+            tvTimeRefresh.setText(mediaItem.getPasstime());
+
+            List<NetAudioBean.ListBean.TagsBean> tagsEntities = mediaItem.getTags();
+            if (tagsEntities != null && tagsEntities.size() > 0) {
+                StringBuffer buffer = new StringBuffer();
+                for (int i = 0; i < tagsEntities.size(); i++) {
+                    buffer.append(tagsEntities.get(i).getName() + " ");
+                }
+                tvVideoKindText.setText(buffer.toString());
+            }
+            tvShenheDingNumber.setText(mediaItem.getUp());
+            tvShenheCaiNumber.setText(mediaItem.getDown() + "");
+            tvPostsNumber.setText(mediaItem.getForward() + "");
+        }
     }
 
     class VideoHoder extends BaseViewHolder {
@@ -141,7 +237,7 @@ public class NetRecyclerAdapter extends RecyclerView.Adapter{
         }
     }
 
-    class ImageHolder extends RecyclerView.ViewHolder {
+    class ImageHolder extends BaseViewHolder {
         TextView tvContext;
         ImageView ivImageIcon;
 
@@ -152,6 +248,7 @@ public class NetRecyclerAdapter extends RecyclerView.Adapter{
         }
 
         public void setData(NetAudioBean.ListBean mediaItem) {
+            super.setData(mediaItem);
             tvContext.setText(mediaItem.getText() + "_" + mediaItem.getType());
 
             ivImageIcon.setImageResource(R.drawable.bg_item);
@@ -165,7 +262,7 @@ public class NetRecyclerAdapter extends RecyclerView.Adapter{
         }
     }
 
-    class TextHolder extends RecyclerView.ViewHolder {
+    class TextHolder extends BaseViewHolder {
         TextView tvContext;
         TextHolder(View convertView) {
             super(convertView);
@@ -173,80 +270,54 @@ public class NetRecyclerAdapter extends RecyclerView.Adapter{
         }
 
         public void setData(NetAudioBean.ListBean listBean) {
+            super.setData(listBean);
             tvContext.setText(listBean.getText() + "_" + listBean.getType());
+            Log.e("TAG","--------wenzi ----------");
         }
     }
 
-    class GifHolder extends RecyclerView.ViewHolder {
+    class GifHolder extends BaseViewHolder {
+        TextView tvContext;
+        ImageView ivImageGif;
+        private ImageOptions imageOptions;
+
         GifHolder(View convertView) {
             super(convertView);
+            tvContext = (TextView) convertView.findViewById(R.id.tv_context);
+            ivImageGif = (ImageView) convertView.findViewById(R.id.iv_image_gif);
+
+            imageOptions = new ImageOptions.Builder()
+                    .setSize(ViewGroup.LayoutParams.WRAP_CONTENT, -2)
+                    .setIgnoreGif(false)
+                    .setImageScaleType(ImageView.ScaleType.CENTER_CROP)
+                    .setLoadingDrawableId(R.drawable.video_default)
+                    .setFailureDrawableId(R.drawable.video_default)
+                    .build();
         }
 
-        public void setData(NetAudioBean.ListBean listBean) {
+        public void setData(NetAudioBean.ListBean mediaItem) {
+            super.setData(mediaItem);
+            tvContext.setText(mediaItem.getText() + "_" + mediaItem.getType());
+            if (mediaItem.getGif() != null && mediaItem.getGif() != null && mediaItem.getGif().getImages() != null) {
+                x.image().bind(ivImageGif, mediaItem.getGif().getImages().get(0), imageOptions);
+            }
 
         }
     }
 
     class ADHolder extends RecyclerView.ViewHolder {
+        TextView tvContext;
+        ImageView ivImageIcon;
+        Button btnInstall;
+
         ADHolder(View convertView) {
             super(convertView);
+            tvContext = (TextView) convertView.findViewById(R.id.tv_context);
+            btnInstall = (Button) convertView.findViewById(R.id.btn_install);
+            ivImageIcon = (ImageView) convertView.findViewById(R.id.iv_image_icon);
         }
 
-        public void setData(NetAudioBean.ListBean listBean) {
-
-        }
     }
 
-    private class BaseViewHolder extends RecyclerView.ViewHolder {
-        ImageView ivHeadpic;
-        TextView tvName;
-        TextView tvTimeRefresh;
-        ImageView ivRightMore;
-        ImageView ivVideoKind;
-        TextView tvVideoKindText;
-        TextView tvShenheDingNumber;
-        TextView tvShenheCaiNumber;
-        TextView tvPostsNumber;
-        LinearLayout llDownload;
 
-        public BaseViewHolder(View convertView) {
-            super(convertView);
-
-            ivHeadpic = (ImageView) convertView.findViewById(R.id.iv_headpic);
-            tvName = (TextView) convertView.findViewById(R.id.tv_name);
-            tvTimeRefresh = (TextView) convertView.findViewById(R.id.tv_time_refresh);
-            ivRightMore = (ImageView) convertView.findViewById(R.id.iv_right_more);
-
-            ivVideoKind = (ImageView) convertView.findViewById(R.id.iv_video_kind);
-            tvVideoKindText = (TextView) convertView.findViewById(R.id.tv_video_kind_text);
-            tvShenheDingNumber = (TextView) convertView.findViewById(R.id.tv_shenhe_ding_number);
-            tvShenheCaiNumber = (TextView) convertView.findViewById(R.id.tv_shenhe_cai_number);
-            tvPostsNumber = (TextView) convertView.findViewById(R.id.tv_posts_number);
-            llDownload = (LinearLayout) convertView.findViewById(R.id.ll_download);
-        }
-
-        public void setData(NetAudioBean.ListBean mediaItem) {
-
-            if (mediaItem.getU() != null && mediaItem.getU().getHeader() != null && mediaItem.getU().getHeader().get(0) != null) {
-                x.image().bind(ivHeadpic, mediaItem.getU().getHeader().get(0));
-            }
-            if (mediaItem.getU() != null && mediaItem.getU().getName() != null) {
-                tvName.setText(mediaItem.getU().getName() + "");
-            }
-
-            tvTimeRefresh.setText(mediaItem.getPasstime());
-
-            List<NetAudioBean.ListBean.TagsBean> tagsEntities = mediaItem.getTags();
-            if (tagsEntities != null && tagsEntities.size() > 0) {
-                StringBuffer buffer = new StringBuffer();
-                for (int i = 0; i < tagsEntities.size(); i++) {
-                    buffer.append(tagsEntities.get(i).getName() + " ");
-                }
-                tvVideoKindText.setText(buffer.toString());
-            }
-            tvShenheDingNumber.setText(mediaItem.getUp());
-            tvShenheCaiNumber.setText(mediaItem.getDown() + "");
-            tvPostsNumber.setText(mediaItem.getForward() + "");
-        }
-    }
 }

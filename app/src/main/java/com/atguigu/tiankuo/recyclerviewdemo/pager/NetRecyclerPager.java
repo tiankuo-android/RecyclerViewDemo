@@ -1,7 +1,7 @@
 package com.atguigu.tiankuo.recyclerviewdemo.pager;
 
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -18,22 +18,19 @@ import org.xutils.common.util.LogUtil;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-import static com.atguigu.tiankuo.recyclerviewdemo.R.id.recyclerview;
-
 public class NetRecyclerPager extends BaseFragment {
 
-    private ArrayList<String> datas;
     private String NET_AUDIO_URL = "http://s.budejie.com/topic/list/jingxuan/1/budejie-android-6.2.8/0-20.json?market=baidu&udid=863425026599592&appname=baisibudejie&os=4.2.2&client=android&visiting=&mac=98%3A6c%3Af5%3A4b%3A72%3A6d&ver=6.2.8";
+    private List<NetAudioBean.ListBean> listDatas;
     private NetRecyclerAdapter myAdapter;
 
 
-    @Bind(recyclerview)
+    @Bind(R.id.recyclerview)
     RecyclerView recyclerView;
     @Bind(R.id.progressbar)
     ProgressBar progressbar;
@@ -44,8 +41,32 @@ public class NetRecyclerPager extends BaseFragment {
     public View initView() {
         View view = View.inflate(context, R.layout.activity_net_recycler_pager, null);
         ButterKnife.bind(this, view);
+
+//        //设置点击事件
+//        recyclerView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//
+//
+//                NetAudioBean.ListBean listEntity = datas.get(position);
+//                if (listEntity != null) {
+//                    //3.传递视频列表
+//                    Intent intent = new Intent(context, ShowImageAndGifActivity.class);
+//                    if (listEntity.getType().equals("gif")) {
+//                        String url = listEntity.getGif().getImages().get(0);
+//                        intent.putExtra("url", url);
+//                        context.startActivity(intent);
+//                    } else if (listEntity.getType().equals("image")) {
+//                        String url = listEntity.getImage().getBig().get(0);
+//                        intent.putExtra("url", url);
+//                        context.startActivity(intent);
+//                    }
+//                }
+//            }
+//        });
         return null;
     }
+
     @Override
     public void initData() {
         super.initData();
@@ -80,24 +101,23 @@ public class NetRecyclerPager extends BaseFragment {
 
     private void processData(String result) {
         NetAudioBean netAudioBean = new Gson().fromJson(result, NetAudioBean.class);
-        List<NetAudioBean.ListBean> datas = netAudioBean.getList();
-        String text = datas.get(0).getText();
-        if (datas != null && datas.size() > 0) {
+        listDatas = netAudioBean.getList();
+        String text = listDatas.get(0).getText();
+        if (listDatas != null && listDatas.size() > 0) {
             //有数据
             Log.e("TAG","------有数据-----");
             tvNomedia.setVisibility(View.GONE);
             //设置适配器
-            myAdapter = new NetRecyclerAdapter(context, datas);
+            myAdapter = new NetRecyclerAdapter(context,listDatas);
+            Log.e("TAG","------有数据-----" + myAdapter);
             recyclerView.setAdapter(myAdapter);
+            recyclerView.setLayoutManager(new LinearLayoutManager(context,LinearLayoutManager.VERTICAL,false));
 
         } else {
             Log.e("TAG","------没有数据-----");
             tvNomedia.setVisibility(View.VISIBLE);
         }
-        StaggeredGridLayoutManager staggeredGridLayoutManager =  new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.HORIZONTAL);
-        recyclerView.setLayoutManager(staggeredGridLayoutManager);
-
-
+        progressbar.setVisibility(View.GONE);
     }
     private List<NetAudioBean.ListBean> parsedJson(String json) {
         NetAudioBean netAudioBean = new Gson().fromJson(json, NetAudioBean.class);
