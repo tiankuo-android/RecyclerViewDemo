@@ -95,16 +95,14 @@ public class NetRecyclerAdapter extends RecyclerView.Adapter{
             ADHolder adHolder = (ADHolder) holder;
             adHolder.setData(datas.get(position));
         }
-
-
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return datas.size();
     }
 
-    private class VideoHoder extends BaseViewHolder {
+    class VideoHoder extends BaseViewHolder {
         Utils utils;
         TextView tvContext;
         JCVideoPlayerStandard jcvVideoplayer;
@@ -113,7 +111,7 @@ public class NetRecyclerAdapter extends RecyclerView.Adapter{
         ImageView ivCommant;
         TextView tvCommantContext;
 
-        public VideoHoder(View convertView) {
+        VideoHoder(View convertView) {
             super(convertView);
             tvContext = (TextView) convertView.findViewById(R.id.tv_context);
             utils = new Utils();
@@ -125,7 +123,6 @@ public class NetRecyclerAdapter extends RecyclerView.Adapter{
         }
         public void setData(NetAudioBean.ListBean mediaItem) {
             super.setData(mediaItem);
-
             tvContext.setText(mediaItem.getText() + "_" + mediaItem.getType());
 
             boolean setUp = jcvVideoplayer.setUp(
@@ -144,8 +141,44 @@ public class NetRecyclerAdapter extends RecyclerView.Adapter{
         }
     }
 
-    private class ImageHolder extends RecyclerView.ViewHolder {
-        public ImageHolder(View convertView) {
+    class ImageHolder extends RecyclerView.ViewHolder {
+        TextView tvContext;
+        ImageView ivImageIcon;
+
+        ImageHolder(View convertView) {
+            super(convertView);
+            tvContext = (TextView) convertView.findViewById(R.id.tv_context);
+            ivImageIcon = (ImageView) convertView.findViewById(R.id.iv_image_icon);
+        }
+
+        public void setData(NetAudioBean.ListBean mediaItem) {
+            tvContext.setText(mediaItem.getText() + "_" + mediaItem.getType());
+
+            ivImageIcon.setImageResource(R.drawable.bg_item);
+            if (mediaItem.getImage() != null && mediaItem.getImage() != null && mediaItem.getImage().getSmall() != null) {
+                Picasso.with(mContext)
+                        .load(mediaItem.getImage().getDownload_url().get(0))
+                        .placeholder(R.drawable.video_default)
+                        .error(R.drawable.video_default)
+                        .into(ivImageIcon);
+            }
+        }
+    }
+
+    class TextHolder extends RecyclerView.ViewHolder {
+        TextView tvContext;
+        TextHolder(View convertView) {
+            super(convertView);
+            tvContext = (TextView) convertView.findViewById(R.id.tv_context);
+        }
+
+        public void setData(NetAudioBean.ListBean listBean) {
+            tvContext.setText(listBean.getText() + "_" + listBean.getType());
+        }
+    }
+
+    class GifHolder extends RecyclerView.ViewHolder {
+        GifHolder(View convertView) {
             super(convertView);
         }
 
@@ -154,28 +187,8 @@ public class NetRecyclerAdapter extends RecyclerView.Adapter{
         }
     }
 
-    private class TextHolder extends RecyclerView.ViewHolder {
-        public TextHolder(View convertView) {
-            super(convertView);
-        }
-
-        public void setData(NetAudioBean.ListBean listBean) {
-
-        }
-    }
-
-    private class GifHolder extends RecyclerView.ViewHolder {
-        public GifHolder(View convertView) {
-            super(convertView);
-        }
-
-        public void setData(NetAudioBean.ListBean listBean) {
-
-        }
-    }
-
-    private class ADHolder extends RecyclerView.ViewHolder {
-        public ADHolder(View convertView) {
+    class ADHolder extends RecyclerView.ViewHolder {
+        ADHolder(View convertView) {
             super(convertView);
         }
 
@@ -213,6 +226,7 @@ public class NetRecyclerAdapter extends RecyclerView.Adapter{
         }
 
         public void setData(NetAudioBean.ListBean mediaItem) {
+
             if (mediaItem.getU() != null && mediaItem.getU().getHeader() != null && mediaItem.getU().getHeader().get(0) != null) {
                 x.image().bind(ivHeadpic, mediaItem.getU().getHeader().get(0));
             }
@@ -230,14 +244,9 @@ public class NetRecyclerAdapter extends RecyclerView.Adapter{
                 }
                 tvVideoKindText.setText(buffer.toString());
             }
-
             tvShenheDingNumber.setText(mediaItem.getUp());
             tvShenheCaiNumber.setText(mediaItem.getDown() + "");
             tvPostsNumber.setText(mediaItem.getForward() + "");
-
         }
     }
-
-
-
 }
