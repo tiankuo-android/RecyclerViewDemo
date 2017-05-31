@@ -10,6 +10,7 @@ import com.atguigu.tiankuo.recyclerviewdemo.fragment.BaseFragment;
 import com.atguigu.tiankuo.recyclerviewdemo.pager.LocalAudioPager;
 import com.atguigu.tiankuo.recyclerviewdemo.pager.LocalVideoPager;
 import com.atguigu.tiankuo.recyclerviewdemo.pager.NetAudioPager;
+import com.atguigu.tiankuo.recyclerviewdemo.pager.NetRecyclerPager;
 import com.atguigu.tiankuo.recyclerviewdemo.pager.NetVideoPager;
 
 import java.util.ArrayList;
