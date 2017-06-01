@@ -64,7 +64,7 @@ public class NetRecyclerPager extends BaseFragment {
 //                }
 //            }
 //        });
-        return null;
+        return view;
     }
 
     @Override
@@ -110,8 +110,8 @@ public class NetRecyclerPager extends BaseFragment {
             //设置适配器
             myAdapter = new NetRecyclerAdapter(context,listDatas);
             Log.e("TAG","------有数据-----" + myAdapter);
-            recyclerView.setAdapter(myAdapter);
             recyclerView.setLayoutManager(new LinearLayoutManager(context,LinearLayoutManager.VERTICAL,false));
+            recyclerView.setAdapter(myAdapter);
 
         } else {
             Log.e("TAG","------没有数据-----");

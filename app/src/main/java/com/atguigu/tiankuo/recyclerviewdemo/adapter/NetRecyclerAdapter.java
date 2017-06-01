@@ -101,6 +101,7 @@ public class NetRecyclerAdapter extends RecyclerView.Adapter{
                 viewHolder = new ADHolder(convertView);
                 break;
         }
+        Log.e("TAG", "viewholder===" + viewHolder);
         return viewHolder;
     }
 
@@ -164,7 +165,7 @@ public class NetRecyclerAdapter extends RecyclerView.Adapter{
                             intent.putExtra("url", url);
                             mContext.startActivity(intent);
                         } else if (listEntity.getType().equals("image")) {
-                            String url = listEntity.getImage().getBig().get(0);
+                            String url = listEntity.getImage().getThumbnail_small().get(0);
                             intent.putExtra("url", url);
                             mContext.startActivity(intent);
                         }
